@@ -14,11 +14,15 @@ services:
     env_file:
       - ./dotenv_files/.env
     depends_on:
-      - psql
+     psql: 
+      condition: service_healthy
+
   psql:
     container_name: psql
     image: postgres:13-alpine
     volumes:
       - ./data/postgres/data:/var/lib/postgresql/data/
     env_file:
-      - ./dotenv_files/.env
+      - ./dotenv_files/.env    
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U blog_user"]

@@ -83,6 +83,9 @@ WSGI_APPLICATION = 'project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+'''DBHOST = os.getenv('DB_ENGINE')
+print(DBHOST)'''
+
 DATABASES = {
     'default': {
         'ENGINE': os.getenv('DB_ENGINE', 'change-me'),
@@ -132,9 +135,10 @@ USE_TZ = True
 # /DATA/WEB/STATIC
 STATIC_URL = '/static/'
 STATIC_ROOT = DATA_DIR / 'static'
-STATICFILES_DIRS = (
-    BASE_DIR / 'base_static',
-)
+
+'''STATICFILES_DIRS = (
+    DATA_DIR / 'static',
+)'''
 
 MEDIA_URL = '/media/'
 # /data/web/media
