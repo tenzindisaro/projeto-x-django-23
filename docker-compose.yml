@@ -14,9 +14,9 @@ services:
     env_file:
       - ./dotenv_files/.env
     depends_on:
-     psql: 
-      condition: service_healthy
-
+      - psql
+     #psql: 
+      #condition: service_healthy
   psql:
     container_name: psql
     image: postgres:13-alpine
@@ -24,5 +24,6 @@ services:
       - ./data/postgres/data:/var/lib/postgresql/data/
     env_file:
       - ./dotenv_files/.env    
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U blog_user"]
+     #healthcheck:
+      #test: ["CMD-SHELL", "pg_isready -U $POSTGRES_USER"]
+      #test: ["CMD-SHELL", "while ! pg_isready -U $POSTGRES_USER; do sleep 1; done && python manage.py migrate"]
