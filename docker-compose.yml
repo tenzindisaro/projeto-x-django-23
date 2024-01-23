@@ -3,14 +3,16 @@ version: '3.9'
 services:
   djangoapp:
     container_name: djangoapp
+    # command: tail -f /dev/null
     build:
       context: .
     ports:
       - 8000:8000
     volumes:
       - ./djangoapp:/djangoapp
-      - ./data/web/static:/data/web/static/
-      - ./data/web/media:/data/web/media/
+      # - ./data/web/static:/data/web/static/
+      # - ./data/web/media:/data/web/media/
+      - ./scripts/:/scripts/
     env_file:
       - ./dotenv_files/.env
     depends_on:
@@ -25,5 +27,5 @@ services:
     env_file:
       - ./dotenv_files/.env    
      #healthcheck:
-      #test: ["CMD-SHELL", "pg_isready -U $POSTGRES_USER"]
       #test: ["CMD-SHELL", "while ! pg_isready -U $POSTGRES_USER; do sleep 1; done && python manage.py migrate"]
+      

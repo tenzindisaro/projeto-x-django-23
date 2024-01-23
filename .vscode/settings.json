@@ -1,6 +1,6 @@
 {
   "editor.formatOnSave": false,
-  "window.zoomLevel": 0,
+  "window.zoomLevel": 1,
   "editor.fontSize": 18,
   "editor.hover.enabled": true,
   "workbench.startupEditor": "none",
