@@ -12,6 +12,7 @@ RUN apt update && \
 
 WORKDIR /djangoapp
 
+
 RUN pip install -r requirements.txt
 
 RUN adduser --disabled-password --no-create-home duser
