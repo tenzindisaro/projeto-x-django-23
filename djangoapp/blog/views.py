@@ -149,65 +149,126 @@ class CreatedByListView(PostListView):
 #             'page_title' : page_title,
 #         }
 #     )
+    
+class CategoryListViwe(PostListView):
+    allow_empty = False
 
-def category(request, slug):
-    posts = Post.objects.get_published().filter(category__slug =slug)
+    def get_queryset(self):
 
-    paginator = Paginator(posts, PER_PAGE)
-    page_number = request.GET.get("page")
-    page_obj = paginator.get_page(page_number)
+        return super().get_queryset().filter(category__slug=self.kwargs.get('slug'))
+    
+    def get_context_data(self, **kwargs):
+        ctx =super().get_context_data(**kwargs)
 
-    if len(page_obj) == 0:
-        raise Http404()
+        page_title = f'{self.object_list[0].category.name} - Categoria - '
+        ctx.update({'page_title' : page_title},)
+        return ctx
+    
 
-    page_title = f'{page_obj[0].category.name} - Categoria - '
+# def category(request, slug):
+#     posts = Post.objects.get_published().filter(category__slug=slug)
 
-    return render(
-        request, 
-        'blog/pages/index.html',
-        {
-            'page_obj' : page_obj,
-            'page_title' : page_title,
-        }
-    )
+#     paginator = Paginator(posts, PER_PAGE)
+#     page_number = request.GET.get("page")
+#     page_obj = paginator.get_page(page_number)
 
-def tag(request, slug):
-    posts = Post.objects.get_published().filter(tags__slug =slug)
+#     if len(page_obj) == 0:
+#         raise Http404()
 
-    paginator = Paginator(posts, PER_PAGE)
-    page_number = request.GET.get("page")
-    page_obj = paginator.get_page(page_number)
+#     page_title = f'{page_obj[0].category.name} - Categoria - '
 
-    if len(page_obj) == 0:
-        raise Http404()
+#     return render(
+#         request, 
+#         'blog/pages/index.html',
+#         {
+#             'page_obj' : page_obj,
+#             'page_title' : page_title,
+#         }
+#     )
 
-    page_title = f'{page_obj[0].tags.first().name} - Tag - '
+class TagListViwe(PostListView):
+    allow_empty = False
 
-    return render(
-        request, 
-        'blog/pages/index.html',
-        {
-            'page_obj' : page_obj,
-            'page_title' : page_title,
-        }
-    )
+    def get_queryset(self):
 
-def search(request):
-    search_value = request.GET.get('search', '').strip()
-    posts = Post.objects.get_published().filter(
+        return super().get_queryset().filter(tags__slug =self.kwargs.get('slug'))
+    
+    def get_context_data(self, **kwargs):
+        ctx =super().get_context_data(**kwargs)
+
+        page_title = f'{self.object_list[0].tags.first().name} - Tag - '
+        ctx.update({'page_title' : page_title,})
+        return ctx
+
+# def tag(request, slug):
+#     posts = Post.objects.get_published().filter(tags__slug =slug)
+
+#     paginator = Paginator(posts, PER_PAGE)
+#     page_number = request.GET.get("page")
+#     page_obj = paginator.get_page(page_number)
+
+#     if len(page_obj) == 0:
+#         raise Http404()
+
+#     page_title = f'{page_obj[0].tags.first().name} - Tag - '
+
+#     return render(
+#         request, 
+#         'blog/pages/index.html',
+#         {
+#             'page_obj' : page_obj,
+#             'page_title' : page_title,
+#         }
+#     )
+
+class SearchListViwe(PostListView):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._search_value = ''
+
+    def setup(self, request, *args, **kwargs):
+        self._search_value = request.GET.get('search', '').strip()
+        
+        return super().setup(request, *args, **kwargs)
+    def get_queryset(self):
+        search_value = self.search_value
+        return super().get_queryset().filter(
         Q(title__icontains=search_value) |
         Q(excerpt__icontains=search_value) |
         Q(content__icontains=search_value)
-    )[:PER_PAGE]
+        )[:PER_PAGE]
+    
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        search_value = self._search_value
+        ctx.update({
+            'page_title' : f'{search_value[:30]} - Search - ', 
+            'Search_value' : search_value,
+             })
 
-    page_title = f'{search_value[:30]} - Search - '
+        return ctx
+    
+    def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        if self._search_value == '':
+            return redirect('blog:index')
+        return super().get(request, *args, **kwargs)
 
-    return render(
-        request, 
-        'blog/pages/index.html',
-        {
-            'page_obj' : posts,
-            'search' : search_value,
-            'page_title' : page_title,
-        }
-    )
+# def search(request):
+#     search_value = request.GET.get('search', '').strip()
+#     posts = Post.objects.get_published().filter(
+#         Q(title__icontains=search_value) |
+#         Q(excerpt__icontains=search_value) |
+#         Q(content__icontains=search_value)
+#     )[:PER_PAGE]
+
+#     page_title = f'{search_value[:30]} - Search - '
+
+#     return render(
+#         request, 
+#         'blog/pages/index.html',
+#         {
+#             'page_obj' : posts,
+#             'search' : search_value,
+#             'page_title' : page_title,
+#         }
+#     )
